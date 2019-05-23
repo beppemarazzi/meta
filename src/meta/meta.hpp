@@ -142,17 +142,17 @@ struct type_node final {
     const bool is_member_object_pointer;
     const bool is_member_function_pointer;
     const size_type extent;
-    void*(* const ptr)(void*);
+    void *(* const ptr)(void *);
     type(* const remove_pointer)();
     bool(* const destroy)(handle);
     type(* const self)();
-    type_node*(* const clazz)();
-    base_node *base;
-    conv_node *conv;
-    ctor_node *ctor;
-    dtor_node *dtor;
-    data_node *data;
-    func_node *func;
+    type_node *(* const clazz)();
+    base_node *base{nullptr};
+    conv_node *conv{nullptr};
+    ctor_node *ctor{nullptr};
+    dtor_node *dtor{nullptr};
+    data_node *data{nullptr};
+    func_node *func{nullptr};
 };
 
 
@@ -1681,14 +1681,14 @@ public:
     }
 
     /**
-     * @brief Provides the meta type for the class type (i.e. without pointers,
-     * references or const)
+     * @brief Provides the meta type for the class type (as an example without
+     * pointers, references or const)
      * @return The meta type for the class type of the type
      */
     inline meta::type clazz() const noexcept {
         return node->clazz();
     }
-    
+
     /**
      * @brief Iterates all the meta base of a meta type.
      *
@@ -1890,8 +1890,8 @@ public:
      */
     inline bool destroy(handle handle) const {
         return node->clazz()->dtor
-            ? node->clazz()->dtor->invoke(handle)
-            : node->clazz()->destroy(handle);
+                ? node->clazz()->dtor->invoke(handle)
+                : node->clazz()->destroy(handle);
     }
 
     /**
@@ -1949,7 +1949,7 @@ public:
     inline bool operator==(const type &other) const noexcept {
         return node == other.node;
     }
-    
+
 private:
     const internal::type_node *node;
 };
@@ -2272,17 +2272,17 @@ type_node * info_node<Type>::resolve() noexcept {
             std::is_member_object_pointer_v<Type>,
             std::is_member_function_pointer_v<Type>,
             std::extent_v<Type>,
-            [](void* ptr) -> void* {
+            [](void *ptr) -> void * {
                 if constexpr(std::is_pointer_v<Type>) {
-                    return reinterpret_cast<void*>(*reinterpret_cast<Type*>(ptr));
+                    return reinterpret_cast<void *>(*reinterpret_cast<Type *>(ptr));
                 } else {
-                    return reinterpret_cast<void*>(reinterpret_cast<Type*>(ptr));
+                    return reinterpret_cast<void *>(reinterpret_cast<Type *>(ptr));
                 }
             },
             []() -> meta::type { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); },
             &destroy<Type>,
             []() -> meta::type { return &node; },
-            []() -> type_node* { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); }
+            []() -> type_node * { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); }
         };
 
         type = &node;

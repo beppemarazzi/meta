@@ -89,11 +89,11 @@ class factory {
             std::is_member_object_pointer_v<Type>,
             std::is_member_function_pointer_v<Type>,
             std::extent_v<Type>,
-            [](void* ptr) -> void* { return ptr; },
+            [](void *ptr) -> void * { return ptr; },
             []() -> meta::type { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); },
             &internal::destroy<Type>,
             []() -> meta::type { return &node; },
-            []() -> internal::type_node* { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); }
+            []() -> internal::type_node * { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); }
         };
 
         node.name = name;
