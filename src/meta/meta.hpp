@@ -2274,7 +2274,8 @@ type_node * info_node<Type>::resolve() noexcept {
             std::extent_v<Type>,
             [](void *ptr) -> void * {
                 if constexpr(std::is_pointer_v<Type> && std::is_class_v<std::decay_t<std::remove_pointer_t<Type>>>) {
-                    return *static_cast<Type *>(ptr);
+                    auto **dptr = static_cast<Type *>(ptr);
+                    return *dptr;
                 } else {
                     return ptr;
                 }
