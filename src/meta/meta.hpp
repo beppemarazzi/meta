@@ -2273,10 +2273,10 @@ type_node * info_node<Type>::resolve() noexcept {
             std::is_member_function_pointer_v<Type>,
             std::extent_v<Type>,
             [](void *ptr) -> void * {
-                if constexpr(std::is_pointer_v<Type>) {
-                    return reinterpret_cast<void *>(*reinterpret_cast<Type *>(ptr));
+                if constexpr(std::is_pointer_v<Type> && std::is_class_v<std::decay_t<std::remove_pointer_t<Type>>>) {
+                    return *static_cast<Type *>(ptr);
                 } else {
-                    return reinterpret_cast<void *>(reinterpret_cast<Type *>(ptr));
+                    return ptr;
                 }
             },
             []() -> meta::type { return internal::type_info<std::remove_pointer_t<Type>>::resolve(); },
